@@ -10,6 +10,11 @@ interface ResponseError extends Error {
   errmsg: string;
 }
 
+interface ErrorResponse extends Error {
+  statusCode: number | undefined;
+  status: number | undefined;
+}
+
 const handleCastErrorDB = (err: Error) => {
   if (err instanceof Error.CastError) {
     const message = `Invalid ${err.path}: ${err.value}.`;

@@ -51,7 +51,8 @@ class App {
 
   private initialiseDatabaseConnection(): void {
     const { DATABASE_LOCAL, DATABASE_PASSWORD } = process.env;
-    const DB = DATABASE_LOCAL!.replace("<password>", DATABASE_PASSWORD!);
+    // const DB = DATABASE_LOCAL!.replace("<password>", DATABASE_PASSWORD!);
+    const DB = DATABASE_LOCAL as string;
 
     mongoose.set("strictQuery", false);
     mongoose.connect(DB).then(() => {
