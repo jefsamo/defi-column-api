@@ -21,12 +21,14 @@ class UserService {
     }
     signup(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, password, passwordConfirm } = body;
+            const { name, email, password, passwordConfirm, role, imageUrl } = body;
             const newUser = yield this.user.create({
                 name,
                 email,
                 password,
                 passwordConfirm,
+                role,
+                imageUrl,
             });
             // console.log(newUser.createSignupToken());
             return newUser;

@@ -14,6 +14,7 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
       type: String,
       unique: true,
       required: [true, "A User must have an email!"],
+      lowercase: true,
     },
     role: {
       type: String,
