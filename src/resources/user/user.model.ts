@@ -1,7 +1,6 @@
 import { Schema, model, Model } from "mongoose";
 import { IUser, IUserMethods } from "@/resources/user/user.interface";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
 
 type IUserModel = Model<IUser, {}, IUserMethods>;
 
@@ -20,6 +19,9 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
       type: String,
       enum: ["user", "admin", "writer"],
       default: "user",
+    },
+    imageUrl: {
+      type: String,
     },
     password: {
       type: String,

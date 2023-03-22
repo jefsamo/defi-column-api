@@ -11,7 +11,7 @@ export interface IUser {
   passwordResetToken: string;
   passwordResetExpires: Date;
   googleId: string;
-  isVerified: boolean;
+  imageUrl: string;
 }
 
 export interface IUserMethods {
