@@ -1,10 +1,11 @@
 import "dotenv/config";
 import "module-alias/register";
 import App from "./app";
-import GenericController from "@/resources/generic/generic.controller";
+// import GenericController from "@/resources/generic/generic.controller";
+import UserController from "@/resources/user/user.controller";
 import logger from "@/utils/logger";
 
-const app = new App([new GenericController()], Number(process.env.PORT));
+const app = new App([new UserController()], Number(process.env.PORT));
 
 app.listen();
 //
