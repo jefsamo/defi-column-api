@@ -73,3 +73,9 @@ export const restrictTo = (...roles: string[]) => {
     next();
   };
 };
+
+export const getMe = (req: any, res: Response, next: NextFunction) => {
+  req.params.id = req.user.id;
+  console.log(req.user);
+  next();
+};

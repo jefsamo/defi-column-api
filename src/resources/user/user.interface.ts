@@ -12,6 +12,7 @@ export interface IUser {
   passwordResetExpires: Date;
   googleId: string;
   imageUrl: string;
+  created_At: Date;
 }
 
 export interface IUserMethods {

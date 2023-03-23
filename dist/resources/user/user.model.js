@@ -32,6 +32,7 @@ const userSchema = new mongoose_1.Schema({
     },
     imageUrl: {
         type: String,
+        default: "default.png",
     },
     password: {
         type: String,
@@ -54,10 +55,9 @@ const userSchema = new mongoose_1.Schema({
     passwordChangedAt: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
-}, {
-    timestamps: {
-        createdAt: "created_At",
-        updatedAt: "updated_At",
+    created_At: {
+        type: Date,
+        default: Date.now,
     },
 });
 userSchema.pre("save", function (next) {
@@ -69,6 +69,7 @@ userSchema.pre("save", function (next) {
         this.password = yield bcryptjs_1.default.hash(this.password, 12);
         // Delete passwordConfirm field
         this.passwordConfirm = undefined;
+        this.created_At = new Date(Date.now() + 60 * 60 * 1000);
         next();
     });
 });

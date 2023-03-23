@@ -4,55 +4,52 @@ import bcrypt from "bcryptjs";
 
 type IUserModel = Model<IUser, {}, IUserMethods>;
 
-const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
-  {
-    name: {
-      type: String,
-      required: [true, "A User must have a name!"],
-    },
-    email: {
-      type: String,
-      unique: true,
-      required: [true, "A User must have an email!"],
-      lowercase: true,
-    },
-    role: {
-      type: String,
-      enum: ["user", "admin", "writer"],
-      default: "user",
-    },
-    imageUrl: {
-      type: String,
-    },
-    password: {
-      type: String,
-      required: [true, "Please provide a password"],
-      minlength: 8,
-      select: false,
-    },
-    passwordConfirm: {
-      type: String,
-      required: [true, "Please confirm your password"],
-      validate: {
-        // This only works on CREATE and SAVE!!!
-        validator: function (this: IUser, el: string): boolean {
-          return el === this.password;
-        },
-        message: "Password are not the same!",
-      },
-    },
-    googleId: String,
-    passwordChangedAt: String,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+const userSchema = new Schema<IUser, IUserModel, IUserMethods>({
+  name: {
+    type: String,
+    required: [true, "A User must have a name!"],
   },
-  {
-    timestamps: {
-      createdAt: "created_At",
-      updatedAt: "updated_At",
+  email: {
+    type: String,
+    unique: true,
+    required: [true, "A User must have an email!"],
+    lowercase: true,
+  },
+  role: {
+    type: String,
+    enum: ["user", "admin", "writer"],
+    default: "user",
+  },
+  imageUrl: {
+    type: String,
+    default: "default.png",
+  },
+  password: {
+    type: String,
+    required: [true, "Please provide a password"],
+    minlength: 8,
+    select: false,
+  },
+  passwordConfirm: {
+    type: String,
+    required: [true, "Please confirm your password"],
+    validate: {
+      // This only works on CREATE and SAVE!!!
+      validator: function (this: IUser, el: string): boolean {
+        return el === this.password;
+      },
+      message: "Password are not the same!",
     },
-  }
-);
+  },
+  googleId: String,
+  passwordChangedAt: String,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  created_At: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 userSchema.pre("save", async function (next) {
   // Only run this function if password was actually modified
@@ -63,7 +60,7 @@ userSchema.pre("save", async function (next) {
 
   // Delete passwordConfirm field
   this.passwordConfirm = undefined;
-
+  this.created_At = new Date(Date.now() + 60 * 60 * 1000);
   next();
 });
 

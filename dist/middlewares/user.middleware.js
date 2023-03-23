@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.restrictTo = exports.protect = void 0;
+exports.getMe = exports.restrictTo = exports.protect = void 0;
 const user_model_1 = __importDefault(require("@/resources/user/user.model"));
 const catchAsync_1 = __importDefault(require("@/utils/exceptions/catchAsync"));
 const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
@@ -53,3 +53,9 @@ const restrictTo = (...roles) => {
     };
 };
 exports.restrictTo = restrictTo;
+const getMe = (req, res, next) => {
+    req.params.id = req.user.id;
+    console.log(req.user);
+    next();
+};
+exports.getMe = getMe;

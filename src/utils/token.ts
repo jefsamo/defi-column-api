@@ -28,7 +28,7 @@ export const createSendToken = (
 ) => {
   const token = signToken(user._id);
 
-  const jwtExpiresIn: JwtExpires = process.env.JWT_COOKIE_EXPIRES_IN!;
+  const jwtExpiresIn = process.env.JWT_COOKIE_EXPIRES_IN!;
 
   const cookieOptions: CookieOptions = {
     expires: new Date(Date.now() + Number(jwtExpiresIn) * 24 * 60 * 60 * 1000),

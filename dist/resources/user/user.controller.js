@@ -18,8 +18,11 @@ const catchAsync_1 = __importDefault(require("@/utils/exceptions/catchAsync"));
 const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
 const APIFeatures_1 = __importDefault(require("@/utils/APIFeatures"));
 const user_service_1 = __importDefault(require("./user.service"));
+const mongoose_1 = require("mongoose");
 const cloudinary_1 = require("cloudinary");
 const cloudinary_2 = require("@/utils/cloudinary");
+const token_1 = require("@/utils/token");
+const user_middleware_1 = require("@/middlewares/user.middleware");
 class UserController {
     constructor() {
         this.path = "/users";
@@ -41,26 +44,43 @@ class UserController {
                 },
             });
         });
-        this.signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const file = req.file;
-            console.log(file);
-            console.log(req.body);
-            if (!file) {
-                return next(new HttpException_1.default("No file was chosen", 404));
-            }
-            // Upload the processed image to Cloudinary
-            const uploadedImage = yield cloudinary_1.v2.uploader.upload(file.path, {
-                public_id: file.originalname.split(".")[0],
-                folder: "sample",
-                overwrite: true,
-            });
-            const user = yield this.UserService.signup(Object.assign({ imageUrl: uploadedImage.secure_url }, req.body));
-            return res.status(201).json({
+        this.getCurrentUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            const user = yield this.UserService.findUserById(id);
+            return res.status(200).json({
                 status: "success",
                 data: {
                     user,
                 },
             });
+        }));
+        this.signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const file = req.file;
+            if (file) {
+                // Upload the processed image to Cloudinary
+                const uploadedImage = yield cloudinary_1.v2.uploader.upload(file.path, {
+                    public_id: file.originalname.split(".")[0],
+                    folder: "sample",
+                    overwrite: true,
+                });
+                const user = yield this.UserService.signup(Object.assign({ imageUrl: uploadedImage.secure_url }, req.body));
+                return (0, token_1.createSendToken)(user, 201, res);
+            }
+            const user = yield this.UserService.signup(Object.assign({}, req.body));
+            return (0, token_1.createSendToken)(user, 201, res);
+        }));
+        this.login = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { email, password } = req.body;
+            // 1) Check if email and password exist
+            if (!email || !password) {
+                return next(new HttpException_1.default("Please provide email and password!", 400));
+            }
+            // 2) Check if user exists && password is correct
+            const user = yield user_model_1.default.findOne({ email }).select("+password");
+            if (!user || !(yield user.correctPassword(password, user.password))) {
+                return next(new HttpException_1.default("Incorrect email or password", 401));
+            }
+            (0, token_1.createSendToken)(user, 200, res);
         }));
         this.initialiseRoutes();
     }
@@ -68,8 +88,10 @@ class UserController {
     initialiseRoutes() {
         this.router
             .route(`${this.path}`)
-            .get(this.getAllUsers)
+            .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getAllUsers)
             .post(cloudinary_2.upload.single("imageUrl"), this.signup);
+        this.router.post(`${this.path}/login`, this.login);
+        this.router.get(`${this.path}/user`, user_middleware_1.protect, user_middleware_1.getMe, this.getCurrentUser);
     }
 }
 exports.default = UserController;
