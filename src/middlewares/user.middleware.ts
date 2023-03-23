@@ -33,7 +33,6 @@ export const protect = catchAsync(
 
     // 3) Check if user still exists
     const currentUser = await User.findById(decoded.id);
-    console.log(currentUser);
     if (!currentUser) {
       return next(
         new HttpException(

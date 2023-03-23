@@ -31,7 +31,6 @@ exports.protect = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0
     const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
     // 3) Check if user still exists
     const currentUser = yield user_model_1.default.findById(decoded.id);
-    console.log(currentUser);
     if (!currentUser) {
         return next(new HttpException_1.default("The user belonging to this token does no longer exist.", 401));
     }

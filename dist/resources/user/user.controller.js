@@ -82,6 +82,23 @@ class UserController {
             }
             (0, token_1.createSendToken)(user, 200, res);
         }));
+        this.getUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            const user = yield this.UserService.findUserById(id);
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    user,
+                },
+            });
+        }));
+        this.deleteUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            yield this.UserService.deleteUserById(id);
+            return res.status(204).json({
+                status: "success",
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
@@ -90,6 +107,10 @@ class UserController {
             .route(`${this.path}`)
             .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getAllUsers)
             .post(cloudinary_2.upload.single("imageUrl"), this.signup);
+        this.router
+            .route(`${this.path}/:id`)
+            .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getUser)
+            .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteUser);
         this.router.post(`${this.path}/login`, this.login);
         this.router.get(`${this.path}/user`, user_middleware_1.protect, user_middleware_1.getMe, this.getCurrentUser);
     }

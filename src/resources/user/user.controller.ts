@@ -29,6 +29,11 @@ class UserController implements Controller {
       .get(protect, restrictTo("admin"), this.getAllUsers)
       .post(upload.single("imageUrl"), this.signup);
 
+    this.router
+      .route(`${this.path}/:id`)
+      .get(protect, restrictTo("admin"), this.getUser)
+      .delete(protect, restrictTo("admin"), this.deleteUser);
+
     this.router.post(`${this.path}/login`, this.login);
     this.router.get(`${this.path}/user`, protect, getMe, this.getCurrentUser);
   }
@@ -105,6 +110,31 @@ class UserController implements Controller {
       }
 
       createSendToken(user, 200, res);
+    }
+  );
+
+  private getUser = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const id = new Types.ObjectId(req.params.id);
+      const user = await this.UserService.findUserById(id);
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          user,
+        },
+      });
+    }
+  );
+  private deleteUser = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const id = new Types.ObjectId(req.params.id);
+
+      await this.UserService.deleteUserById(id);
+
+      return res.status(204).json({
+        status: "success",
+      });
     }
   );
 }
