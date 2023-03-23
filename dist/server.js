@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 require("module-alias/register");
 const app_1 = __importDefault(require("./app"));
-// import GenericController from "@/resources/generic/generic.controller";
 const user_controller_1 = __importDefault(require("@/resources/user/user.controller"));
+const story_controller_1 = __importDefault(require("@/resources/story/story.controller"));
 const logger_1 = __importDefault(require("@/utils/logger"));
-const app = new app_1.default([new user_controller_1.default()], Number(process.env.PORT));
+const app = new app_1.default([new user_controller_1.default(), new story_controller_1.default()], Number(process.env.PORT));
 app.listen();
 //
 process.on("uncaughtException", (err) => {
