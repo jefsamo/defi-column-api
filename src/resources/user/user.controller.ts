@@ -47,8 +47,6 @@ class UserController implements Controller {
   private signup = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
       const file = req.file;
-      console.log(file);
-      console.log(req.body);
 
       if (!file) {
         return next(new HttpException("No file was chosen", 404));
