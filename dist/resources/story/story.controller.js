@@ -18,6 +18,7 @@ const catchAsync_1 = __importDefault(require("@/utils/exceptions/catchAsync"));
 const APIFeatures_1 = __importDefault(require("@/utils/APIFeatures"));
 const story_service_1 = __importDefault(require("./story.service"));
 const user_middleware_1 = require("@/middlewares/user.middleware");
+const mongoose_1 = require("mongoose");
 class StoryController {
     constructor() {
         this.path = "/stories";
@@ -51,6 +52,14 @@ class StoryController {
                 },
             });
         }));
+        this.deleteStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // const { author } = req.body;
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            yield this.StoryService.deleteStoryById(id);
+            return res.status(204).json({
+                status: "success",
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
@@ -59,6 +68,10 @@ class StoryController {
             .route(`${this.path}`)
             .get(this.getAllStories)
             .post(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("writer", "admin"), this.createStory);
+        this.router
+            .route(`${this.path}/:id`)
+            .get()
+            .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteStory);
     }
 }
 exports.default = StoryController;

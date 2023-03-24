@@ -8,6 +8,7 @@ import HttpException from "@/utils/exceptions/HttpException";
 import APIFeatures from "@/utils/APIFeatures";
 import StoryService from "./story.service";
 import { protect, restrictTo } from "@/middlewares/user.middleware";
+import { Types } from "mongoose";
 
 class StoryController implements Controller {
   public path = "/stories";
@@ -24,6 +25,10 @@ class StoryController implements Controller {
       .route(`${this.path}`)
       .get(this.getAllStories)
       .post(protect, restrictTo("writer", "admin"), this.createStory);
+    this.router
+      .route(`${this.path}/:id`)
+      .get()
+      .delete(protect, restrictTo("admin"), this.deleteStory);
   }
   private getAllStories = catchAsync(async (req: Request, res: Response) => {
     const features = new APIFeatures(
@@ -59,6 +64,19 @@ class StoryController implements Controller {
         data: {
           story,
         },
+      });
+    }
+  );
+
+  private deleteStory = catchAsync(
+    async (req: RequestUser, res: Response, next: NextFunction) => {
+      // const { author } = req.body;
+      const id = new Types.ObjectId(req.params.id);
+
+      await this.StoryService.deleteStoryById(id);
+
+      return res.status(204).json({
+        status: "success",
       });
     }
   );
