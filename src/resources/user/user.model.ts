@@ -1,6 +1,7 @@
 import { Schema, model, Model } from "mongoose";
 import { IUser, IUserMethods } from "@/resources/user/user.interface";
 import bcrypt from "bcryptjs";
+import slugify from "slugify";
 
 type IUserModel = Model<IUser, {}, IUserMethods>;
 
@@ -24,6 +25,7 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>({
     type: String,
     default: "default.png",
   },
+  slug: { type: String },
   password: {
     type: String,
     required: [true, "Please provide a password"],
@@ -61,6 +63,11 @@ userSchema.pre("save", async function (next) {
   // Delete passwordConfirm field
   this.passwordConfirm = undefined;
   this.created_At = new Date(Date.now() + 60 * 60 * 1000);
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
   next();
 });
 

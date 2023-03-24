@@ -13,6 +13,7 @@ export interface IUser {
   googleId: string;
   imageUrl: string;
   created_At: Date;
+  slug: string;
 }
 
 export interface IUserMethods {
