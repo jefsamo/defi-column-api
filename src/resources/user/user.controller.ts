@@ -28,6 +28,7 @@ class UserController implements Controller {
       .route(`${this.path}`)
       .get(protect, restrictTo("admin"), this.getAllUsers)
       .post(upload.single("imageUrl"), this.signup);
+    this.router.get(`${this.path}/user`, protect, getMe, this.getCurrentUser);
 
     this.router
       .route(`${this.path}/:id`)
@@ -35,7 +36,6 @@ class UserController implements Controller {
       .delete(protect, restrictTo("admin"), this.deleteUser);
 
     this.router.post(`${this.path}/login`, this.login);
-    this.router.get(`${this.path}/user`, protect, getMe, this.getCurrentUser);
   }
   private getAllUsers = async (req: Request, res: Response) => {
     const features = new APIFeatures(User.find(), req.query)

@@ -107,12 +107,12 @@ class UserController {
             .route(`${this.path}`)
             .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getAllUsers)
             .post(cloudinary_2.upload.single("imageUrl"), this.signup);
+        this.router.get(`${this.path}/user`, user_middleware_1.protect, user_middleware_1.getMe, this.getCurrentUser);
         this.router
             .route(`${this.path}/:id`)
             .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getUser)
             .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteUser);
         this.router.post(`${this.path}/login`, this.login);
-        this.router.get(`${this.path}/user`, user_middleware_1.protect, user_middleware_1.getMe, this.getCurrentUser);
     }
 }
 exports.default = UserController;
