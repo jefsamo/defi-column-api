@@ -16,7 +16,15 @@ const storySchema = new Schema<IStory>({
     type: String,
     required: [true, "A story must have a banner"],
   },
+  previewUrl: {
+    type: String,
+    required: [true, "A story must have a preview"],
+  },
   body: [String],
+  created_At: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 storySchema.pre("save", function (next) {
@@ -24,7 +32,13 @@ storySchema.pre("save", function (next) {
   next();
 });
 
+// storySchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "user",
+//   });
+//   next();
+// });
+
 const StoryModel = model<IStory>("Story", storySchema);
-storySchema;
 
 export default StoryModel;

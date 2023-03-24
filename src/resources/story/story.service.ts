@@ -2,13 +2,14 @@ import StoryModel from "@/resources/story/story.model";
 import HttpException from "@/utils/exceptions/HttpException";
 import { Types } from "mongoose";
 import { IStory } from "./story.interface";
-// import otpGenerator from "otp-generator";
+
+import { IUser } from "../user/user.interface";
 
 class StoryService {
   private story = StoryModel;
 
   public async createStory(bodyM: IStory): Promise<IStory> {
-    const { title, author, body, category, imageUrl } = bodyM;
+    const { title, author, body, category, imageUrl, previewUrl } = bodyM;
 
     const story = await this.story.create({
       title,
@@ -16,6 +17,7 @@ class StoryService {
       body,
       category,
       imageUrl,
+      previewUrl,
     });
 
     return story;

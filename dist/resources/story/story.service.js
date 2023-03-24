@@ -14,20 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const story_model_1 = __importDefault(require("@/resources/story/story.model"));
 const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
-// import otpGenerator from "otp-generator";
 class StoryService {
     constructor() {
         this.story = story_model_1.default;
     }
     createStory(bodyM) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { title, author, body, category, imageUrl } = bodyM;
+            const { title, author, body, category, imageUrl, previewUrl } = bodyM;
             const story = yield this.story.create({
                 title,
                 author,
                 body,
                 category,
                 imageUrl,
+                previewUrl,
             });
             return story;
         });

@@ -19,12 +19,25 @@ const storySchema = new mongoose_1.Schema({
         type: String,
         required: [true, "A story must have a banner"],
     },
+    previewUrl: {
+        type: String,
+        required: [true, "A story must have a preview"],
+    },
     body: [String],
+    created_At: {
+        type: Date,
+        default: Date.now,
+    },
 });
 storySchema.pre("save", function (next) {
     this.slug = (0, slugify_1.default)(this.title, { lower: true });
     next();
 });
+// storySchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "user",
+//   });
+//   next();
+// });
 const StoryModel = (0, mongoose_1.model)("Story", storySchema);
-storySchema;
 exports.default = StoryModel;
