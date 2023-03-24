@@ -33,7 +33,6 @@ export const protect = catchAsync(
 
     // 3) Check if user still exists
     const currentUser = await User.findById(decoded.id);
-    console.log(currentUser);
     if (!currentUser) {
       return next(
         new HttpException(
@@ -72,4 +71,10 @@ export const restrictTo = (...roles: string[]) => {
     }
     next();
   };
+};
+
+export const getMe = (req: any, res: Response, next: NextFunction) => {
+  req.params.id = req.user.id;
+  console.log(req.user);
+  next();
 };
