@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const slugify_1 = __importDefault(require("slugify"));
 const userSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -34,6 +35,7 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         default: "default.png",
     },
+    slug: { type: String },
     password: {
         type: String,
         required: [true, "Please provide a password"],
@@ -72,6 +74,10 @@ userSchema.pre("save", function (next) {
         this.created_At = new Date(Date.now() + 60 * 60 * 1000);
         next();
     });
+});
+userSchema.pre("save", function (next) {
+    this.slug = (0, slugify_1.default)(this.name, { lower: true });
+    next();
 });
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     if (this.passwordChangedAt) {

@@ -8,7 +8,8 @@ class UserService {
   private user = UserModel;
 
   public async signup(body: IUser): Promise<IUser> {
-    const { name, email, password, passwordConfirm, role, imageUrl } = body;
+    const { name, email, password, passwordConfirm, role, imageUrl, slug } =
+      body;
 
     const newUser = await this.user.create({
       name,
@@ -17,6 +18,7 @@ class UserService {
       passwordConfirm,
       role,
       imageUrl,
+      slug,
     });
     // console.log(newUser.createSignupToken());
 
