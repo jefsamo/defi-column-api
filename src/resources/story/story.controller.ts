@@ -10,7 +10,7 @@ import APIFeatures from "@/utils/APIFeatures";
 import StoryService from "./story.service";
 import { protect, restrictTo } from "@/middlewares/user.middleware";
 import { Types } from "mongoose";
-import { type } from "os";
+// import { type } from "os";
 
 class StoryController implements Controller {
   public path = "/stories";
@@ -23,6 +23,7 @@ class StoryController implements Controller {
 
   // Routes handlers
   public initialiseRoutes(): void {
+    this.router.get(`${this.path}/latest`, this.getLatestStories);
     this.router.route(`${this.path}/:id/save`).post(protect, this.saveStory);
     this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
 
@@ -184,6 +185,39 @@ class StoryController implements Controller {
       const stories = await features.query;
       return res.status(200).json({
         status: "success",
+        data: {
+          stories,
+        },
+      });
+    }
+  );
+
+  private getLatestStories = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const date = new Date();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const day = date.getDate();
+
+      console.log(`${year}-${month}-${day}`);
+      const features = new APIFeatures(
+        Story.find({
+          created_At: {
+            $gte: `${year}-${month}-${day}`,
+            $lte: `${year}-${month}-${day + 1}`,
+          },
+        }).populate("author", "name"),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+      const stories = await features.query;
+
+      return res.status(200).json({
+        status: "success",
+        result: stories.length,
         data: {
           stories,
         },

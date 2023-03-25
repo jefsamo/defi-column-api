@@ -21,6 +21,7 @@ const APIFeatures_1 = __importDefault(require("@/utils/APIFeatures"));
 const story_service_1 = __importDefault(require("./story.service"));
 const user_middleware_1 = require("@/middlewares/user.middleware");
 const mongoose_1 = require("mongoose");
+// import { type } from "os";
 class StoryController {
     constructor() {
         this.path = "/stories";
@@ -130,10 +131,36 @@ class StoryController {
                 },
             });
         }));
+        this.getLatestStories = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const date = new Date();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            const day = date.getDate();
+            console.log(`${year}-${month}-${day}`);
+            const features = new APIFeatures_1.default(story_model_1.default.find({
+                created_At: {
+                    $gte: `${year}-${month}-${day}`,
+                    $lte: `${year}-${month}-${day + 1}`,
+                },
+            }).populate("author", "name"), req.query)
+                .filter()
+                .sort()
+                .limitFields()
+                .paginate();
+            const stories = yield features.query;
+            return res.status(200).json({
+                status: "success",
+                result: stories.length,
+                data: {
+                    stories,
+                },
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
     initialiseRoutes() {
+        this.router.get(`${this.path}/latest`, this.getLatestStories);
         this.router.route(`${this.path}/:id/save`).post(user_middleware_1.protect, this.saveStory);
         this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
         this.router
