@@ -22,14 +22,16 @@ class StoryController implements Controller {
   // Routes handlers
   public initialiseRoutes(): void {
     this.router
+      .route(`${this.path}/:id`)
+      .get(this.getStory)
+      .delete(protect, restrictTo("admin"), this.deleteStory)
+      .patch(protect, restrictTo("admin"), this.updateStory);
+    this.router
       .route(`${this.path}`)
       .get(this.getAllStories)
       .post(protect, restrictTo("writer", "admin"), this.createStory);
-    this.router
-      .route(`${this.path}/:id`)
-      .get()
-      .delete(protect, restrictTo("admin"), this.deleteStory);
   }
+
   private getAllStories = catchAsync(async (req: Request, res: Response) => {
     const features = new APIFeatures(
       Story.find().populate("author", "name"),
@@ -68,6 +70,41 @@ class StoryController implements Controller {
     }
   );
 
+  private getStory = catchAsync(
+    async (req: RequestUser, res: Response, next: NextFunction) => {
+      // const { author } = req.body;
+      const id = new Types.ObjectId(req.params.id);
+      console.log("Heyyy");
+
+      const story = await this.StoryService.findStoryById(id);
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          story,
+        },
+      });
+    }
+  );
+  private updateStory = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const story = await Story.findByIdAndUpdate(req.params.id, req.body, {
+        returnOriginal: false,
+        runValidators: true,
+      });
+
+      if (!story) {
+        return next(new HttpException("No Story with this ID", 404));
+      }
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          story,
+        },
+      });
+    }
+  );
   private deleteStory = catchAsync(
     async (req: RequestUser, res: Response, next: NextFunction) => {
       // const { author } = req.body;

@@ -79,11 +79,11 @@ class AuthorController {
     }
     // Routes handlers
     initialiseRoutes() {
-        this.router.route(`${this.path}/:slug`).get(this.getAllStoriesByWriter);
         this.router
             .route(`${this.path}/:id`)
             .patch(user_middleware_1.protect, this.updateStoryByWriter)
             .delete(user_middleware_1.protect, this.deleteStoryByWriter);
+        this.router.route(`${this.path}/:slug`).get(this.getAllStoriesByWriter);
     }
 }
 exports.default = AuthorController;

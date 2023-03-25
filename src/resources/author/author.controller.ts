@@ -22,11 +22,11 @@ class AuthorController implements Controller {
 
   // Routes handlers
   public initialiseRoutes(): void {
-    this.router.route(`${this.path}/:slug`).get(this.getAllStoriesByWriter);
     this.router
       .route(`${this.path}/:id`)
       .patch(protect, this.updateStoryByWriter)
       .delete(protect, this.deleteStoryByWriter);
+    this.router.route(`${this.path}/:slug`).get(this.getAllStoriesByWriter);
   }
 
   // Get Stories by Writer

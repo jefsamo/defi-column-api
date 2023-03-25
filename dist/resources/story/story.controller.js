@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const story_model_1 = __importDefault(require("@/resources/story/story.model"));
 const catchAsync_1 = __importDefault(require("@/utils/exceptions/catchAsync"));
+const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
 const APIFeatures_1 = __importDefault(require("@/utils/APIFeatures"));
 const story_service_1 = __importDefault(require("./story.service"));
 const user_middleware_1 = require("@/middlewares/user.middleware");
@@ -52,6 +53,33 @@ class StoryController {
                 },
             });
         }));
+        this.getStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // const { author } = req.body;
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            console.log("Heyyy");
+            const story = yield this.StoryService.findStoryById(id);
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    story,
+                },
+            });
+        }));
+        this.updateStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const story = yield story_model_1.default.findByIdAndUpdate(req.params.id, req.body, {
+                returnOriginal: false,
+                runValidators: true,
+            });
+            if (!story) {
+                return next(new HttpException_1.default("No Story with this ID", 404));
+            }
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    story,
+                },
+            });
+        }));
         this.deleteStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             // const { author } = req.body;
             const id = new mongoose_1.Types.ObjectId(req.params.id);
@@ -65,13 +93,14 @@ class StoryController {
     // Routes handlers
     initialiseRoutes() {
         this.router
+            .route(`${this.path}/:id`)
+            .get(this.getStory)
+            .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteStory)
+            .patch(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.updateStory);
+        this.router
             .route(`${this.path}`)
             .get(this.getAllStories)
             .post(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("writer", "admin"), this.createStory);
-        this.router
-            .route(`${this.path}/:id`)
-            .get()
-            .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteStory);
     }
 }
 exports.default = StoryController;
