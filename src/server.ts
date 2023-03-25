@@ -4,10 +4,16 @@ import App from "./app";
 import UserController from "@/resources/user/user.controller";
 import StoryController from "@/resources/story/story.controller";
 import AuthorController from "@/resources/author/author.controller";
+import SavedStoriesController from "@/resources/savedStories/savedStories.controller";
 import logger from "@/utils/logger";
 
 const app = new App(
-  [new UserController(), new StoryController(), new AuthorController()],
+  [
+    new UserController(),
+    new StoryController(),
+    new AuthorController(),
+    new SavedStoriesController(),
+  ],
   Number(process.env.PORT)
 );
 
