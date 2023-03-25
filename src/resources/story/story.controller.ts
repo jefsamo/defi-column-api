@@ -10,6 +10,7 @@ import APIFeatures from "@/utils/APIFeatures";
 import StoryService from "./story.service";
 import { protect, restrictTo } from "@/middlewares/user.middleware";
 import { Types } from "mongoose";
+import { type } from "os";
 
 class StoryController implements Controller {
   public path = "/stories";
@@ -23,6 +24,9 @@ class StoryController implements Controller {
   // Routes handlers
   public initialiseRoutes(): void {
     this.router.route(`${this.path}/:id/save`).post(protect, this.saveStory);
+    this.router
+      .route(`${this.path}/:id/remove`)
+      .delete(protect, this.deleteASavedStory);
     this.router
       .route(`${this.path}/:id`)
       .get(this.getStory)
@@ -141,6 +145,19 @@ class StoryController implements Controller {
         data: {
           savedStory,
         },
+      });
+    }
+  );
+
+  private deleteASavedStory = catchAsync(
+    async (req: RequestUser, res: Response, next: NextFunction) => {
+      // const { author } = req.body;
+      const id = new Types.ObjectId(req.params.id);
+
+      await SavedStory.findOneAndDelete({ story: id });
+
+      return res.status(204).json({
+        status: "success",
       });
     }
   );

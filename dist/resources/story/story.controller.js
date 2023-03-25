@@ -108,11 +108,22 @@ class StoryController {
                 },
             });
         }));
+        this.deleteASavedStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // const { author } = req.body;
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            yield savedStories_model_1.default.findOneAndDelete({ story: id });
+            return res.status(204).json({
+                status: "success",
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
     initialiseRoutes() {
         this.router.route(`${this.path}/:id/save`).post(user_middleware_1.protect, this.saveStory);
+        this.router
+            .route(`${this.path}/:id/remove`)
+            .delete(user_middleware_1.protect, this.deleteASavedStory);
         this.router
             .route(`${this.path}/:id`)
             .get(this.getStory)
