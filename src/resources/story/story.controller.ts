@@ -170,10 +170,18 @@ class StoryController implements Controller {
 
   private getStoriesByCategory = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-      const stories = await Story.find({
-        category: req.params.category,
-      }).populate("author", "name created_At");
-
+      const features = new APIFeatures(
+        Story.find({ category: req.params.category }).populate(
+          "author",
+          "name created_At"
+        ),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
+      const stories = await features.query;
       return res.status(200).json({
         status: "success",
         data: {

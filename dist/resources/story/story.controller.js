@@ -117,9 +117,12 @@ class StoryController {
             });
         }));
         this.getStoriesByCategory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const stories = yield story_model_1.default.find({
-                category: req.params.category,
-            }).populate("author", "name created_At");
+            const features = new APIFeatures_1.default(story_model_1.default.find({ category: req.params.category }).populate("author", "name created_At"), req.query)
+                .filter()
+                .sort()
+                .limitFields()
+                .paginate();
+            const stories = yield features.query;
             return res.status(200).json({
                 status: "success",
                 data: {
