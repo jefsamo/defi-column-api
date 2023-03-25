@@ -116,11 +116,23 @@ class StoryController {
                 status: "success",
             });
         }));
+        this.getStoriesByCategory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const stories = yield story_model_1.default.find({
+                category: req.params.category,
+            }).populate("author", "name created_At");
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    stories,
+                },
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
     initialiseRoutes() {
         this.router.route(`${this.path}/:id/save`).post(user_middleware_1.protect, this.saveStory);
+        this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
         this.router
             .route(`${this.path}/:id/remove`)
             .delete(user_middleware_1.protect, this.deleteASavedStory);

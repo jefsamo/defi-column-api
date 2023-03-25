@@ -24,14 +24,18 @@ class StoryController implements Controller {
   // Routes handlers
   public initialiseRoutes(): void {
     this.router.route(`${this.path}/:id/save`).post(protect, this.saveStory);
+    this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
+
     this.router
       .route(`${this.path}/:id/remove`)
       .delete(protect, this.deleteASavedStory);
+
     this.router
       .route(`${this.path}/:id`)
       .get(this.getStory)
       .delete(protect, restrictTo("admin"), this.deleteStory)
       .patch(protect, restrictTo("admin"), this.updateStory);
+
     this.router
       .route(`${this.path}`)
       .get(this.getAllStories)
@@ -92,6 +96,7 @@ class StoryController implements Controller {
       });
     }
   );
+
   private updateStory = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
       const story = await Story.findByIdAndUpdate(req.params.id, req.body, {
@@ -111,6 +116,7 @@ class StoryController implements Controller {
       });
     }
   );
+
   private deleteStory = catchAsync(
     async (req: RequestUser, res: Response, next: NextFunction) => {
       // const { author } = req.body;
@@ -158,6 +164,21 @@ class StoryController implements Controller {
 
       return res.status(204).json({
         status: "success",
+      });
+    }
+  );
+
+  private getStoriesByCategory = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const stories = await Story.find({
+        category: req.params.category,
+      }).populate("author", "name created_At");
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          stories,
+        },
       });
     }
   );
