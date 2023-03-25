@@ -3,6 +3,7 @@ import Controller, {
   RequestUser,
 } from "@/utils/interfaces/controller.interface";
 import Story from "@/resources/story/story.model";
+import SavedStory from "@/resources/savedStories/savedStories.model";
 import catchAsync from "@/utils/exceptions/catchAsync";
 import HttpException from "@/utils/exceptions/HttpException";
 import APIFeatures from "@/utils/APIFeatures";
@@ -21,6 +22,7 @@ class StoryController implements Controller {
 
   // Routes handlers
   public initialiseRoutes(): void {
+    this.router.route(`${this.path}/:id/save`).post(protect, this.saveStory);
     this.router
       .route(`${this.path}/:id`)
       .get(this.getStory)
@@ -114,6 +116,31 @@ class StoryController implements Controller {
 
       return res.status(204).json({
         status: "success",
+      });
+    }
+  );
+
+  private saveStory = catchAsync(
+    async (req: RequestUser, res: Response, next: NextFunction) => {
+      // const { author } = req.body;
+      const id = new Types.ObjectId(req.params.id);
+
+      const checkStoryForDuplication = await SavedStory.find({ story: id });
+      console.log(checkStoryForDuplication);
+      if (!checkStoryForDuplication) {
+        return next(new HttpException("Story already saved", 400));
+      }
+
+      const savedStory = await SavedStory.create({
+        story: id,
+        user: req.user._id,
+      });
+
+      return res.status(201).json({
+        status: "success",
+        data: {
+          savedStory,
+        },
       });
     }
   );

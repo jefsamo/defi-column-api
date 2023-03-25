@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const story_model_1 = __importDefault(require("@/resources/story/story.model"));
+const savedStories_model_1 = __importDefault(require("@/resources/savedStories/savedStories.model"));
 const catchAsync_1 = __importDefault(require("@/utils/exceptions/catchAsync"));
 const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
 const APIFeatures_1 = __importDefault(require("@/utils/APIFeatures"));
@@ -88,10 +89,30 @@ class StoryController {
                 status: "success",
             });
         }));
+        this.saveStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // const { author } = req.body;
+            const id = new mongoose_1.Types.ObjectId(req.params.id);
+            const checkStoryForDuplication = yield savedStories_model_1.default.find({ story: id });
+            console.log(checkStoryForDuplication);
+            if (!checkStoryForDuplication) {
+                return next(new HttpException_1.default("Story already saved", 400));
+            }
+            const savedStory = yield savedStories_model_1.default.create({
+                story: id,
+                user: req.user._id,
+            });
+            return res.status(201).json({
+                status: "success",
+                data: {
+                    savedStory,
+                },
+            });
+        }));
         this.initialiseRoutes();
     }
     // Routes handlers
     initialiseRoutes() {
+        this.router.route(`${this.path}/:id/save`).post(user_middleware_1.protect, this.saveStory);
         this.router
             .route(`${this.path}/:id`)
             .get(this.getStory)
