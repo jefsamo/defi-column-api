@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = __importDefault(require("@/resources/user/user.model"));
 const HttpException_1 = __importDefault(require("@/utils/exceptions/HttpException"));
-// import otpGenerator from "otp-generator";
 class UserService {
     constructor() {
         this.user = user_model_1.default;
@@ -31,7 +30,6 @@ class UserService {
                 imageUrl,
                 slug,
             });
-            // console.log(newUser.createSignupToken());
             return newUser;
         });
     }

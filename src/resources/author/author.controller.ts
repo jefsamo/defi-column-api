@@ -6,7 +6,7 @@ import Story from "@/resources/story/story.model";
 import catchAsync from "@/utils/exceptions/catchAsync";
 import HttpException from "@/utils/exceptions/HttpException";
 import APIFeatures from "@/utils/APIFeatures";
-import { protect, restrictTo } from "@/middlewares/user.middleware";
+import { protect } from "@/middlewares/user.middleware";
 import UserModel from "../user/user.model";
 import StoryService from "../story/story.service";
 import { Types } from "mongoose";
@@ -81,6 +81,7 @@ class AuthorController implements Controller {
     }
   );
 
+  // Delete story by writer
   private deleteStoryByWriter = catchAsync(
     async (req: RequestUser, res: Response, next: NextFunction) => {
       const id = new Types.ObjectId(req.params.id);

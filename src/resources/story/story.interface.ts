@@ -1,5 +1,4 @@
-import { Types, PopulatedDoc } from "mongoose";
-// import { IUser } from "../user/user.interface";
+import { Types } from "mongoose";
 
 export interface IStory {
   // _id: Types.ObjectId;
@@ -7,7 +6,6 @@ export interface IStory {
   category: string;
   slug: string;
   author: Types.ObjectId;
-  // author: IUser["_id"];
   imageUrl: string;
   previewUrl: string;
   body: string[];

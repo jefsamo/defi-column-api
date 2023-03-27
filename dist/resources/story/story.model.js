@@ -33,11 +33,5 @@ storySchema.pre("save", function (next) {
     this.slug = (0, slugify_1.default)(this.title, { lower: true });
     next();
 });
-// storySchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "user",
-//   });
-//   next();
-// });
 const StoryModel = (0, mongoose_1.model)("Story", storySchema);
 exports.default = StoryModel;

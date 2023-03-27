@@ -63,6 +63,7 @@ class AuthorController {
                 },
             });
         }));
+        // Delete story by writer
         this.deleteStoryByWriter = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const id = new mongoose_1.Types.ObjectId(req.params.id);
             const story = yield this.StoryService.findStoryById(id);

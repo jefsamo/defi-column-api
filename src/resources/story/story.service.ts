@@ -3,8 +3,6 @@ import HttpException from "@/utils/exceptions/HttpException";
 import { Types } from "mongoose";
 import { IStory } from "./story.interface";
 
-import { IUser } from "../user/user.interface";
-
 class StoryService {
   private story = StoryModel;
 
@@ -23,7 +21,7 @@ class StoryService {
     return story;
   }
   public async getAllStories(): Promise<IStory[]> {
-    const stories = await this.story.find().populate("author");
+    const stories = await this.story.find().populate("author", "name");
 
     return stories;
   }

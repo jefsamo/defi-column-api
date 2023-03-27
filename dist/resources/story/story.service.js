@@ -34,7 +34,7 @@ class StoryService {
     }
     getAllStories() {
         return __awaiter(this, void 0, void 0, function* () {
-            const stories = yield this.story.find().populate("author");
+            const stories = yield this.story.find().populate("author", "name");
             return stories;
         });
     }

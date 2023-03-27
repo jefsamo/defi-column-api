@@ -2,14 +2,9 @@ import { NextFunction, Request, Response, Router } from "express";
 import Controller, {
   RequestUser,
 } from "@/utils/interfaces/controller.interface";
-import Story from "@/resources/story/story.model";
-import User from "@/resources/user/user.model";
 import SavedStories from "@/resources/savedStories/savedStories.model";
 import catchAsync from "@/utils/exceptions/catchAsync";
-import HttpException from "@/utils/exceptions/HttpException";
-import APIFeatures from "@/utils/APIFeatures";
 import { protect, restrictTo } from "@/middlewares/user.middleware";
-import { Types } from "mongoose";
 
 class SavedStoryController implements Controller {
   public path = "/saved-stories";

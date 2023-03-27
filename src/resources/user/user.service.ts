@@ -2,7 +2,6 @@ import UserModel from "@/resources/user/user.model";
 import { IUser } from "@/resources/user/user.interface";
 import HttpException from "@/utils/exceptions/HttpException";
 import { Types } from "mongoose";
-// import otpGenerator from "otp-generator";
 
 class UserService {
   private user = UserModel;
@@ -20,7 +19,6 @@ class UserService {
       imageUrl,
       slug,
     });
-    // console.log(newUser.createSignupToken());
 
     return newUser;
   }

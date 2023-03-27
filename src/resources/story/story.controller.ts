@@ -15,6 +15,7 @@ import { Types } from "mongoose";
 class StoryController implements Controller {
   public path = "/stories";
   public router = Router();
+
   private StoryService = new StoryService();
 
   constructor() {
@@ -213,6 +214,7 @@ class StoryController implements Controller {
         .sort()
         .limitFields()
         .paginate();
+
       const stories = await features.query;
 
       return res.status(200).json({

@@ -1,4 +1,4 @@
-import { Schema, model, Model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { IStory } from "@/resources/story/story.interface";
 import slugify from "slugify";
 
@@ -31,13 +31,6 @@ storySchema.pre("save", function (next) {
   this.slug = slugify(this.title, { lower: true });
   next();
 });
-
-// storySchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "user",
-//   });
-//   next();
-// });
 
 const StoryModel = model<IStory>("Story", storySchema);
 
