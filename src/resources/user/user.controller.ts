@@ -24,6 +24,7 @@ class UserController implements Controller {
 
   // Routes handlers
   public initialiseRoutes(): void {
+    this.router.get(`${this.path}/writers`, this.getWriters);
     this.router
       .route(`${this.path}`)
       .get(protect, restrictTo("admin"), this.getAllUsers)
@@ -39,6 +40,23 @@ class UserController implements Controller {
   }
   private getAllUsers = async (req: Request, res: Response) => {
     const features = new APIFeatures(User.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const users = await features.query;
+    // const users = await this.UserService.getAllUsers();
+    return res.status(200).json({
+      status: "success",
+      result: users.length,
+      data: {
+        users,
+      },
+    });
+  };
+
+  private getWriters = async (req: Request, res: Response) => {
+    const features = new APIFeatures(User.find({ role: "writer" }), req.query)
       .filter()
       .sort()
       .limitFields()

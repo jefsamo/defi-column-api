@@ -26,22 +26,23 @@ class StoryController implements Controller {
   public initialiseRoutes(): void {
     this.router.get(`${this.path}/latest`, this.getLatestStories);
     this.router.route(`${this.path}/:id/save`).post(protect, this.saveStory);
-    this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
+    this.router.route(`${this.path}/airdrops`).get(this.getStoriesByCategory);
 
+    this.router.get(`${this.path}/:id`, this.getStory);
+    this.router.get(`${this.path}/:slug`, this.getStoryBySlug);
     this.router
       .route(`${this.path}/:id/remove`)
       .delete(protect, this.deleteASavedStory);
 
     this.router
       .route(`${this.path}/:id`)
-      .get(this.getStory)
       .delete(protect, restrictTo("admin"), this.deleteStory)
       .patch(protect, restrictTo("admin"), this.updateStory);
 
     this.router
       .route(`${this.path}`)
       .get(this.getAllStories)
-      .post(protect, restrictTo("writer", "admin"), this.createStory);
+      .post(protect, restrictTo("writer"), this.createStory);
   }
 
   private getAllStories = catchAsync(async (req: Request, res: Response) => {
@@ -86,9 +87,24 @@ class StoryController implements Controller {
     async (req: RequestUser, res: Response, next: NextFunction) => {
       // const { author } = req.body;
       const id = new Types.ObjectId(req.params.id);
-      console.log("Heyyy");
 
       const story = await this.StoryService.findStoryById(id);
+
+      return res.status(200).json({
+        status: "success",
+        data: {
+          story,
+        },
+      });
+    }
+  );
+
+  private getStoryBySlug = catchAsync(
+    async (req: RequestUser, res: Response, next: NextFunction) => {
+      // const { author } = req.body;
+      // const id = new Types.ObjectId(req.params.id);
+
+      const story = await Story.findOne({ slug: req.params.slug });
 
       return res.status(200).json({
         status: "success",
@@ -137,9 +153,13 @@ class StoryController implements Controller {
       // const { author } = req.body;
       const id = new Types.ObjectId(req.params.id);
 
-      const checkStoryForDuplication = await SavedStory.find({ story: id });
+      const story = await this.StoryService.findStoryById(id);
+      if (!story) {
+        return;
+      }
+      const checkStoryForDuplication = await SavedStory.findOne({ story: id });
       console.log(checkStoryForDuplication);
-      if (!checkStoryForDuplication) {
+      if (checkStoryForDuplication) {
         return next(new HttpException("Story already saved", 400));
       }
 
@@ -169,11 +189,11 @@ class StoryController implements Controller {
       });
     }
   );
-
+  // Break it down to all categories instead of one category
   private getStoriesByCategory = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
       const features = new APIFeatures(
-        Story.find({ category: req.params.category }).populate(
+        Story.find({ category: "airdrops" }).populate(
           "author",
           "name created_At"
         ),

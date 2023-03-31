@@ -3,7 +3,11 @@ import { IStory } from "@/resources/story/story.interface";
 import slugify from "slugify";
 
 const storySchema = new Schema<IStory>({
-  title: { type: String, required: [true, "A story must have a title"] },
+  title: {
+    type: String,
+    required: [true, "A story must have a title"],
+    unique: true,
+  },
   category: {
     type: String,
     required: [true, "A story must have a category"],

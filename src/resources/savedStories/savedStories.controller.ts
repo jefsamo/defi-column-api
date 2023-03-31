@@ -27,7 +27,7 @@ class SavedStoryController implements Controller {
       const savedStories = await SavedStories.find({
         user: req.user._id,
       })
-        .populate("story")
+        .populate("story", "title previewUrl created_At")
         .sort("-created_At");
 
       return res.status(200).json({

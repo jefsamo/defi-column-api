@@ -6,7 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const slugify_1 = __importDefault(require("slugify"));
 const storySchema = new mongoose_1.Schema({
-    title: { type: String, required: [true, "A story must have a title"] },
+    title: {
+        type: String,
+        required: [true, "A story must have a title"],
+        unique: true,
+    },
     category: {
         type: String,
         required: [true, "A story must have a category"],

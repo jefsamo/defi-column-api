@@ -58,8 +58,18 @@ class StoryController {
         this.getStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             // const { author } = req.body;
             const id = new mongoose_1.Types.ObjectId(req.params.id);
-            console.log("Heyyy");
             const story = yield this.StoryService.findStoryById(id);
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    story,
+                },
+            });
+        }));
+        this.getStoryBySlug = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            // const { author } = req.body;
+            // const id = new Types.ObjectId(req.params.id);
+            const story = yield story_model_1.default.findOne({ slug: req.params.slug });
             return res.status(200).json({
                 status: "success",
                 data: {
@@ -93,9 +103,13 @@ class StoryController {
         this.saveStory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             // const { author } = req.body;
             const id = new mongoose_1.Types.ObjectId(req.params.id);
-            const checkStoryForDuplication = yield savedStories_model_1.default.find({ story: id });
+            const story = yield this.StoryService.findStoryById(id);
+            if (!story) {
+                return;
+            }
+            const checkStoryForDuplication = yield savedStories_model_1.default.findOne({ story: id });
             console.log(checkStoryForDuplication);
-            if (!checkStoryForDuplication) {
+            if (checkStoryForDuplication) {
                 return next(new HttpException_1.default("Story already saved", 400));
             }
             const savedStory = yield savedStories_model_1.default.create({
@@ -117,8 +131,9 @@ class StoryController {
                 status: "success",
             });
         }));
+        // Break it down to all categories instead of one category
         this.getStoriesByCategory = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const features = new APIFeatures_1.default(story_model_1.default.find({ category: req.params.category }).populate("author", "name created_At"), req.query)
+            const features = new APIFeatures_1.default(story_model_1.default.find({ category: "airdrops" }).populate("author", "name created_At"), req.query)
                 .filter()
                 .sort()
                 .limitFields()
@@ -162,19 +177,20 @@ class StoryController {
     initialiseRoutes() {
         this.router.get(`${this.path}/latest`, this.getLatestStories);
         this.router.route(`${this.path}/:id/save`).post(user_middleware_1.protect, this.saveStory);
-        this.router.route(`${this.path}/:category`).get(this.getStoriesByCategory);
+        this.router.route(`${this.path}/airdrops`).get(this.getStoriesByCategory);
+        this.router.get(`${this.path}/:id`, this.getStory);
+        this.router.get(`${this.path}/:slug`, this.getStoryBySlug);
         this.router
             .route(`${this.path}/:id/remove`)
             .delete(user_middleware_1.protect, this.deleteASavedStory);
         this.router
             .route(`${this.path}/:id`)
-            .get(this.getStory)
             .delete(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.deleteStory)
             .patch(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.updateStory);
         this.router
             .route(`${this.path}`)
             .get(this.getAllStories)
-            .post(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("writer", "admin"), this.createStory);
+            .post(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("writer"), this.createStory);
     }
 }
 exports.default = StoryController;

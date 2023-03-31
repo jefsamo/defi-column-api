@@ -44,6 +44,22 @@ class UserController {
                 },
             });
         });
+        this.getWriters = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const features = new APIFeatures_1.default(user_model_1.default.find({ role: "writer" }), req.query)
+                .filter()
+                .sort()
+                .limitFields()
+                .paginate();
+            const users = yield features.query;
+            // const users = await this.UserService.getAllUsers();
+            return res.status(200).json({
+                status: "success",
+                result: users.length,
+                data: {
+                    users,
+                },
+            });
+        });
         this.getCurrentUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const id = new mongoose_1.Types.ObjectId(req.params.id);
             const user = yield this.UserService.findUserById(id);
@@ -103,6 +119,7 @@ class UserController {
     }
     // Routes handlers
     initialiseRoutes() {
+        this.router.get(`${this.path}/writers`, this.getWriters);
         this.router
             .route(`${this.path}`)
             .get(user_middleware_1.protect, (0, user_middleware_1.restrictTo)("admin"), this.getAllUsers)
